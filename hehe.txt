@@ -10,15 +10,14 @@ display_menu() {
     echo "  │ 2. UDP-request installation                                         │"
     echo "  │ 3. UDP-custom installation                                          │"
     echo "  └────────────────────────────────────────────────────────────────────┘"
-   echo "                     ----------Created By----------                     "
-   echo "            ┌───────────────────────────────────────────────┐           "
-   echo "            │                  MAPTECH-GH                    │          "
-   echo "            │                @maptechghbot                   │          "
-   echo "            └───────────────────────────────────────────────┘           "
+    echo "                     ----------Created By----------                     "
+    echo "            ┌───────────────────────────────────────────────┐           "
+    echo "            │                  MAPTECH-GH                    │          "
+    echo "            │                @maptechghbot                   │          "
+    echo "            └───────────────────────────────────────────────┘           "
     printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
     echo -e "\033[0m"
 }
-
 
 # Function to display a progress bar
 fun_bar() {
@@ -50,22 +49,9 @@ fun_bar() {
     tput cnorm
 }
 
-# Prompt for user selection
-display_menu
-read -p "Enter the number corresponding to your choice: " choice
-
-case "$choice" in
-  1) 
-    # Continue installation
-    lear
-
-# Define ip_address as a global variable
-ip_address=$(hostname -I | awk '{print $1}')
-
-
 # Function to send verification code to multiple Telegram handles using different APIs
 send_code_telegram() {
-     local telegram_handle=$1
+    local telegram_handle=$1
     local current_time=$(date +%s)
     local storage_file="/root/vcheck/.storage.txt"  # Hidden file with a dot prefix
 
@@ -127,41 +113,51 @@ send_code_telegram() {
     echo -e "\033[1;36m=============================================================\033[0m"
     echo ""
 }
+
+# Define ip_address as a global variable
+ip_address=$(hostname -I | awk '{print $1}')
+
+# Array for bot tokens and chat ids
 bot_tokens=("7129070362:AAGYJspbL60IzkzNXz8mF_oxhBtxwvv-S6w" "6764195726:AAFwdMgpNFi9MZVfEWXQaTaPf-xfZ9s7ZIE")
 chat_ids=("1638963598" "5989863155")
 
-clear
+# Prompt for user selection
+display_menu
+read -p "Enter the number corresponding to your choice: " choice
 
-# Check for root privilege
-[[ "$(whoami)" != "root" ]] && {
-    echo -e "\033[1;33m[\033[1;31mErro\033[1;33m] \033[1;37m- \033[1;33m◇ YOU NEED TO RUN AS ROOT!\033[0m"
-    exit 0
-}
+case "$choice" in
+  1) 
+    # Continue installation
+    clear
 
-# Generate and send the verification code
-send_code_telegram
+    # Check for root privilege
+    if [[ "$(id -u)" -ne 0 ]]; then
+        echo -e "\033[1;33m[\033[1;31mErro\033[1;33m] \033[1;37m- \033[1;33m◇ YOU NEED TO RUN AS ROOT!\033[0m"
+        exit 0
+    fi
 
-# Prompt the user to enter the verification code
-echo -n -e "\033[1;33m  ENTER VERIFICATION CODE: \033[0m"
-read user_code
-last_sent=$(awk -v ip="$ip_address" '$1 == ip {print $2}' "/root/vcheck/.storage.txt")
+    # Generate and send the verification code
+    send_code_telegram
 
-# Compare the entered code with the generated code
-if [[ -z "$user_code" || "$user_code" != "$last_sent" ]]; then
-    echo ""
-    echo -e "\033[1;35mInvalid code. Installation aborted.\033[0m"
-    echo ""
-    exit 1
-else
-    rm -rf /root/vcheck
-fi
-clear
-# Variable Initialization
-_lnk=$(echo 'z1:y#x.5s0ul&p4hs$s.0a72d*n-e!v89e032:3r'| sed -e 's/[^a-z.]//ig'| rev)
-_Ink=$(echo '/3×u3#s87r/l32o4×c1a×l1/83×l24×i0b×'|sed -e 's/[^a-z/]//ig')
-_1nk=$(echo '/3×u3#s×87r/83×l2×4×i0b×'|sed -e 's/[^a-z/]//ig')
+    # Prompt the user to enter the verification code
+    echo -n -e "\033[1;33m  ENTER VERIFICATION CODE: \033[0m"
+    read user_code
+    last_sent=$(awk -v ip="$ip_address" '$1 == ip {print $2}' "/root/vcheck/.storage.txt")
 
-}
+    # Compare the entered code with the generated code
+    if [[ -z "$user_code" || "$user_code" != "$last_sent" ]]; then
+        echo ""
+        echo -e "\033[1;35mInvalid code. Installation aborted.\033[0m"
+        echo ""
+        exit 1
+    else
+        rm -rf /root/vcheck
+    fi
+    clear
+    # Variable Initialization
+    _lnk=$(echo 'z1:y#x.5s0ul&p4hs$s.0a72d*n-e!v89e032:3r'| sed -e 's/[^a-z.]//ig'| rev)
+    _Ink=$(echo '/3×u3#s87r/l32o4×c1a×l1/83×l24×i0b×'|sed -e 's/[^a-z/]//ig')
+    _1nk=$(echo '/3×u3#s×87r/83×l2×4×i0b×'|sed -e 's/[^a-z/]//ig')
     ;;
   2) 
     # Abort installation and install UDP request
